@@ -6,6 +6,7 @@ typedef struct MemoryBlock
 {
   int process_id;
   int data_type;
+  int size;
   void *memory;
 } MemoryBlock;
 
@@ -32,7 +33,9 @@ MemoryBlock *allocate()
   MemoryBlock *newBlock = (MemoryBlock *)malloc(sizeof(MemoryBlock));
   newBlock->process_id = process_id;
   newBlock->data_type = data_type;
+  newBlock->size = blockSize;
   newBlock->memory = malloc(blockSize);
+  memset(newBlock->memory, 0, blockSize);
   printf("test");
   return newBlock;
 }
