@@ -10,6 +10,9 @@ typedef struct MemoryBlock
   void *memory;
 } MemoryBlock;
 
+MemoryBlock *blocks[100];
+int numBlocks = 0;
+
 MemoryBlock *allocate()
 {
 
@@ -22,7 +25,7 @@ MemoryBlock *allocate()
   scanf("%d", &data_type);
   printf("How many bytes u need?\n");
   scanf("%d", &blockSize);
-  printf("%d %d %d", process_id, data_type, blockSize);
+  printf("%d %d %d \n", process_id, data_type, blockSize);
 
   if (data_type < 1 || data_type > 3)
   {
@@ -31,47 +34,74 @@ MemoryBlock *allocate()
   }
 
   MemoryBlock *newBlock = (MemoryBlock *)malloc(sizeof(MemoryBlock));
+  if (numBlocks < 101)
+  {
+    blocks[numBlocks] = newBlock;
+    numBlocks++;
+  }
+  else
+  {
+    printf("Maximum number of blocks reached\n");
+    free(newBlock->memory);
+    free(newBlock);
+    return NULL;
+  }
+
   newBlock->process_id = process_id;
   newBlock->data_type = data_type;
   newBlock->size = blockSize;
   newBlock->memory = malloc(blockSize);
   memset(newBlock->memory, 0, blockSize);
-  printf("test");
   return newBlock;
+}
+
+void displayBlocks()
+{
+  for (int i = 0; i < numBlocks; i++)
+  {
+    printf("Block %d:\n", i);
+    printf("Process ID: %d\n", blocks[i]->process_id);
+    printf("Size: %d\n", blocks[i]->size);
+    // printf("Data Type: %s\n", blocks[i]->data_type);
+  }
 }
 
 int main()
 {
   int choice;
-  printf("what u wanna do mate? \n1-allocate   2-re-allocate   3-deallocate   4-read   5-write   6-history\npress 0 to close\n");
-  scanf("%d", &choice);
-
-  switch (choice)
+  do
   {
-  case 1:
-    allocate();
-    break;
-  case 2:
-    printf("%d", choice);
-    break;
-  case 3:
-    printf("%d", choice);
-    break;
-  case 4:
-    printf("%d", choice);
-    break;
-  case 5:
-    printf("%d", choice);
-    break;
-  case 6:
-    printf("%d", choice);
-    break;
-  case 0:
-    printf("fix this later\n");
-    break;
-  default:
-    printf("choose a valid option\n");
-    main();
-  }
+
+    printf("what u wanna do mate? \n1-allocate   2-re-allocate   3-deallocate   4-read   5-write   6-history\npress 0 to close\n");
+    scanf("%d", &choice);
+
+    switch (choice)
+    {
+    case 1:
+      allocate();
+      break;
+    case 2:
+      printf("%d", choice);
+      break;
+    case 3:
+      printf("%d", choice);
+      break;
+    case 4:
+      displayBlocks();
+      break;
+    case 5:
+      printf("%d", choice);
+      break;
+    case 6:
+      printf("%d", choice);
+      break;
+    case 0:
+      break;
+    default:
+      printf("choose a valid option\n");
+      main();
+    }
+  } while (choice != 0);
+
   return (0);
 }
