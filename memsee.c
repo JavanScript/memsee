@@ -15,7 +15,6 @@ int numBlocks = 0;
 
 MemoryBlock *allocate()
 {
-
   int process_id;
   int data_type;
   int blockSize;
@@ -29,8 +28,7 @@ MemoryBlock *allocate()
 
   if (data_type < 1 || data_type > 3)
   {
-    printf("invalid data type");
-    main();
+    printf("invalid data type\n");
   }
 
   MemoryBlock *newBlock = (MemoryBlock *)malloc(sizeof(MemoryBlock));
@@ -55,14 +53,29 @@ MemoryBlock *allocate()
   return newBlock;
 }
 
+void reallocate()
+{
+  int blockNum;
+  int blockSize;
+  printf("Enter block number (index)\n");
+  scanf("%d", &blockNum);
+  printf("Enter desired size\n");
+  scanf("%d", &blockSize);
+  void *newMem = realloc(blocks[blockNum]->memory, blockSize);
+  blocks[blockNum]->memory = newMem;
+  blocks[blockNum]->size = blockSize;
+}
+
 void displayBlocks()
 {
+  printf("Data types: 1-int   2-float   3-char\n");
   for (int i = 0; i < numBlocks; i++)
   {
+    printf("----------------\n");
     printf("Block %d:\n", i);
     printf("Process ID: %d\n", blocks[i]->process_id);
     printf("Size: %d\n", blocks[i]->size);
-    // printf("Data Type: %s\n", blocks[i]->data_type);
+    printf("Data Type: %d\n", blocks[i]->data_type);
   }
 }
 
@@ -81,7 +94,8 @@ int main()
       allocate();
       break;
     case 2:
-      printf("%d", choice);
+      displayBlocks();
+      reallocate();
       break;
     case 3:
       printf("%d", choice);
@@ -99,7 +113,6 @@ int main()
       break;
     default:
       printf("choose a valid option\n");
-      main();
     }
   } while (choice != 0);
 
