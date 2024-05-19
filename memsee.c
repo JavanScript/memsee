@@ -66,6 +66,21 @@ void reallocate()
   blocks[blockNum]->size = blockSize;
 }
 
+void deallocate()
+{
+  int blockNum;
+  printf("Enter block number (index)\n");
+  scanf("%d", &blockNum);
+  free(blocks[blockNum]->memory);
+  free(blocks[blockNum]);
+  // Jeeeesus
+  for (int i = blockNum; i < numBlocks - 1; i++)
+  {
+    blocks[i] = blocks[i + 1];
+  }
+  numBlocks--;
+}
+
 void displayBlocks()
 {
   printf("Data types: 1-int   2-float   3-char\n");
@@ -98,7 +113,8 @@ int main()
       reallocate();
       break;
     case 3:
-      printf("%d", choice);
+      displayBlocks();
+      deallocate();
       break;
     case 4:
       displayBlocks();
