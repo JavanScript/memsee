@@ -12,6 +12,8 @@ typedef struct MemoryBlock
 
 MemoryBlock *blocks[100];
 int numBlocks = 0;
+MemoryBlock *deallocatedBlocks[100];
+int numDeallocatedBlocks = 0;
 
 MemoryBlock *allocate()
 {
@@ -57,7 +59,7 @@ void reallocate()
 {
   int blockNum;
   int blockSize;
-  printf("Enter block number (index)\n");
+  printf("Enter block number\n");
   scanf("%d", &blockNum);
   printf("Enter desired size\n");
   scanf("%d", &blockSize);
@@ -69,8 +71,17 @@ void reallocate()
 void deallocate()
 {
   int blockNum;
-  printf("Enter block number (index)\n");
+  printf("Enter block number\n");
   scanf("%d", &blockNum);
+  if (blocks[blockNum] == NULL)
+  {
+    printf("block not found\n");
+    return;
+  }
+  MemoryBlock *tempBlock = (MemoryBlock *)malloc(sizeof(MemoryBlock));
+  memcpy(tempBlock, blocks[blockNum], sizeof(MemoryBlock));
+  deallocatedBlocks[blockNum] = tempBlock;
+  numDeallocatedBlocks++;
   free(blocks[blockNum]->memory);
   free(blocks[blockNum]);
   // Jeeeesus
@@ -81,16 +92,143 @@ void deallocate()
   numBlocks--;
 }
 
+void writeBlock()
+{
+  int blockNum;
+  int index;
+  int dataType;
+  printf("Enter block number\n");
+  scanf("%d", &blockNum);
+  printf("Enter index (offset?)\n");
+  scanf("%d", &index);
+  dataType = blocks[blockNum]->data_type;
+  printf("%d\n", dataType);
+
+  switch (dataType)
+  {
+  case 1:
+    if (index + sizeof(int) <= blocks[blockNum]->size)
+    {
+      int data;
+      printf("enter data u wanna write\n");
+      scanf("%d", &data);
+      memcpy((int *)blocks[blockNum]->memory + index, &data, sizeof(int));
+    }
+    else
+    {
+      printf("they ain't payin my salary\n");
+    }
+    break;
+  case 2:
+    if (index + sizeof(float) <= blocks[blockNum]->size)
+    {
+      int data;
+      printf("enter data u wanna write\n");
+      scanf("%f", &data);
+      memcpy((float *)blocks[blockNum]->memory + index, &data, sizeof(float));
+    }
+    else
+    {
+      printf("they ain't payin my salary\n");
+    }
+    break;
+  case 3:
+    if (index + sizeof(char) <= blocks[blockNum]->size)
+    {
+      int data;
+      printf("enter data u wanna write\n");
+      scanf(" %c", &data);
+      memcpy((char *)blocks[blockNum]->memory + index, &data, sizeof(char));
+    }
+    else
+    {
+      printf("they ain't payin my salary\n");
+    }
+    break;
+  default:
+    printf("Invalid data type\n");
+    break;
+  }
+}
+
+void readBlock()
+{
+  int blockNum;
+  int index;
+  int dataType;
+  printf("Enter block number\n");
+  scanf("%d", &blockNum);
+  printf("Enter index (offset?)\n");
+  scanf("%d", &index);
+  dataType = blocks[blockNum]->data_type;
+
+  switch (dataType)
+  {
+  case 1:
+    if (index + sizeof(int) <= blocks[blockNum]->size)
+    {
+      int data;
+      memcpy(&data, (int *)blocks[blockNum]->memory + index, sizeof(int));
+      printf("Data: %d\n", data);
+    }
+    else
+    {
+      printf("wrong index\n");
+    }
+    break;
+  case 2:
+    if (index + sizeof(float) <= blocks[blockNum]->size)
+    {
+      float data;
+      memcpy(&data, (float *)blocks[blockNum]->memory + index, sizeof(float));
+      printf("Data: %f\n", data);
+    }
+    else
+    {
+      printf("wrong index\n");
+    }
+    break;
+  case 3:
+    if (index + sizeof(char) <= blocks[blockNum]->size)
+    {
+      char data;
+      memcpy(&data, (char *)blocks[blockNum]->memory + index, sizeof(char));
+      printf("Data: %c\n", data);
+    }
+    else
+    {
+      printf("wrong index\n");
+    }
+    break;
+  default:
+    printf("Invalid data type\n");
+    break;
+  }
+}
+
 void displayBlocks()
 {
   printf("Data types: 1-int   2-float   3-char\n");
   for (int i = 0; i < numBlocks; i++)
   {
     printf("----------------\n");
-    printf("Block %d:\n", i);
+    printf("Block number: %d:\n", i);
     printf("Process ID: %d\n", blocks[i]->process_id);
     printf("Size: %d\n", blocks[i]->size);
     printf("Data Type: %d\n", blocks[i]->data_type);
+  }
+}
+
+void history()
+{
+  printf("Data types: 1-int   2-float   3-char\n");
+  for (int i = 0; i < numDeallocatedBlocks; i++)
+  {
+    printf("----------------\n");
+    printf("Block number: %d:\n", i);
+    printf("Process ID: %d\n", deallocatedBlocks[i]->process_id);
+    printf("Size: %d\n", deallocatedBlocks[i]->size);
+    printf("Data Type: %d\n", deallocatedBlocks[i]->data_type);
   }
 }
 
@@ -100,7 +238,7 @@ int main()
   do
   {
 
-    printf("what u wanna do mate? \n1-allocate   2-re-allocate   3-deallocate   4-read   5-write   6-history\npress 0 to close\n");
+    printf("what u wanna do mate? \n1-allocate   2-re-allocate   3-deallocate   4-read   5-write   6-history\nenter 0 to close\n");
     scanf("%d", &choice);
 
     switch (choice)
@@ -118,12 +256,13 @@ int main()
       break;
     case 4:
       displayBlocks();
+      readBlock();
       break;
     case 5:
-      printf("%d", choice);
+      writeBlock();
       break;
     case 6:
-      printf("%d", choice);
+      history();
       break;
     case 0:
       break;
